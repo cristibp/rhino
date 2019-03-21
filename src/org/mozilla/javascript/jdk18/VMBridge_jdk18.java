@@ -24,40 +24,20 @@ import org.mozilla.javascript.Wrapper;
 
 public class VMBridge_jdk18 extends VMBridge
 {
-    private ThreadLocal<Object[]> contextLocal = new ThreadLocal<Object[]>();
+    //private ThreadLocal<Object[]> contextLocal = new ThreadLocal<Object[]>();
+    static Context contextLocal;
+
 
     @Override
-    protected Object getThreadContextHelper()
+    protected Context getContext()
     {
-        // To make subsequent batch calls to getContext/setContext faster
-        // associate permanently one element array with contextLocal
-        // so getContext/setContext would need just to read/write the first
-        // array element.
-        // Note that it is necessary to use Object[], not Context[] to allow
-        // garbage collection of Rhino classes. For details see comments
-        // by Attila Szegedi in
-        // https://bugzilla.mozilla.org/show_bug.cgi?id=281067#c5
-
-        Object[] storage = contextLocal.get();
-        if (storage == null) {
-            storage = new Object[1];
-            contextLocal.set(storage);
-        }
-        return storage;
+        return contextLocal;
     }
 
     @Override
-    protected Context getContext(Object contextHelper)
+    protected void setContext( Context cx)
     {
-        Object[] storage = (Object[])contextHelper;
-        return (Context)storage[0];
-    }
-
-    @Override
-    protected void setContext(Object contextHelper, Context cx)
-    {
-        Object[] storage = (Object[])contextHelper;
-        storage[0] = cx;
+        contextLocal = cx;
     }
 
     @Override

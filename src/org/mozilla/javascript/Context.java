@@ -408,8 +408,8 @@ public class Context
      */
     public static Context getCurrentContext()
     {
-        Object helper = VMBridge.instance.getThreadContextHelper();
-        return VMBridge.instance.getContext(helper);
+        return VMBridge.instance.getContext();
+
     }
 
     /**
@@ -446,10 +446,9 @@ public class Context
         return enter(cx, ContextFactory.getGlobal());
     }
 
-    static final Context enter(Context cx, ContextFactory factory)
+    static Context enter(Context cx, ContextFactory factory)
     {
-        Object helper = VMBridge.instance.getThreadContextHelper();
-        Context old = VMBridge.instance.getContext(helper);
+        Context old = VMBridge.instance.getContext();
         if (old != null) {
             cx = old;
         } else {
@@ -467,7 +466,7 @@ public class Context
                     throw new IllegalStateException("can not use Context instance already associated with some thread");
                 }
             }
-            VMBridge.instance.setContext(helper, cx);
+            VMBridge.instance.setContext( cx);
         }
         ++cx.enterCount;
         return cx;
@@ -486,15 +485,14 @@ public class Context
      */
     public static void exit()
     {
-        Object helper = VMBridge.instance.getThreadContextHelper();
-        Context cx = VMBridge.instance.getContext(helper);
+        Context cx = VMBridge.instance.getContext();
         if (cx == null) {
             throw new IllegalStateException(
                 "Calling Context.exit without previous Context.enter");
         }
         if (cx.enterCount < 1) Kit.codeBug();
         if (--cx.enterCount == 0) {
-            VMBridge.instance.setContext(helper, null);
+            VMBridge.instance.setContext(null);
             cx.factory.onContextReleased(cx);
         }
     }

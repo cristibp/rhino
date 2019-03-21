@@ -37,24 +37,13 @@ public abstract class VMBridge
     }
 
     /**
-     * Return a helper object to optimize {@link Context} access.
-     * <p>
-     * The runtime will pass the resulting helper object to the subsequent
-     * calls to {@link #getContext(Object contextHelper)} and
-     * {@link #setContext(Object contextHelper, Context cx)} methods.
-     * In this way the implementation can use the helper to cache
-     * information about current thread to make {@link Context} access faster.
-     */
-    protected abstract Object getThreadContextHelper();
-
-    /**
      * Get {@link Context} instance associated with the current thread
      * or null if none.
      *
      * @param contextHelper The result of {@link #getThreadContextHelper()}
      *                      called from the current thread.
      */
-    protected abstract Context getContext(Object contextHelper);
+    protected abstract Context getContext();
 
     /**
      * Associate {@link Context} instance with the current thread or remove
@@ -63,7 +52,7 @@ public abstract class VMBridge
      * @param contextHelper The result of {@link #getThreadContextHelper()}
      *                      called from the current thread.
      */
-    protected abstract void setContext(Object contextHelper, Context cx);
+    protected abstract void setContext(Context cx);
 
     /**
      * In many JVMSs, public methods in private
